@@ -77,4 +77,4 @@
 1. Vercel で「Add New… → Project」から、GitHub の `shiodome47/video-zoom` を選ぶ
 2. 設定はリポジトリの `vercel.json` に書いてあるので、そのまま「Deploy」
    （ビルド: `npm run build:demo`、出力: `examples/web/dist`）
-3. できた URL を、README のいちばん上の「見本」に書く
+3. できた URL を、README のいちばん上の「見本」に書く（いまは https://video-zoom-ruddy.vercel.app/ ）
