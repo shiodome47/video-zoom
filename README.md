@@ -9,6 +9,7 @@
 ## できること
 
 - スマホ: 2 本指でピンチ、拡大中は 1 本指で移動、ダブルタップで拡大／等倍
+- 1 回タップで `onTap`（再生・一時停止など）。ふつうの動画（`<video>`）でも YouTube でも使える。ダブルタップのときは呼ばない
 - PC: トラックパッドのピンチ（Ctrl + ホイール）、右上の ＋ − ボタン
 - **iPhone の Safari でも、ピンチでページ全体が拡大されない**
 - **YouTube の埋め込み（iframe）にも使える**。iframe の上の指の操作は、ふつうは YouTube（とブラウザ）に取られて、
@@ -30,15 +31,26 @@ React 18 が必要です（`peerDependencies`。使う側のアプリに入っ�
 ## 使い方
 
 ```tsx
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { ZoomableVideo, nextFrame, type VideoFrame } from '@shiodome47/video-zoom'
 import '@shiodome47/video-zoom/style.css' // 見た目（1 回だけ読み込む）
 
 export function Player({ src }: { src: string }) {
   const [frame, setFrame] = useState<VideoFrame>('normal')
+  const videoRef = useRef<HTMLVideoElement>(null)
   return (
-    <ZoomableVideo resetKey={src} expandable frame={frame} onCycleFrame={() => setFrame(nextFrame)}>
-      <video src={src} style={{ width: '100%', height: '100%' }} playsInline />
+    <ZoomableVideo
+      resetKey={src}
+      expandable
+      frame={frame}
+      onCycleFrame={() => setFrame(nextFrame)}
+      onTap={() => {
+        // 画面をタップして再生・一時停止（ダブルタップの拡大とはぶつからない）
+        const v = videoRef.current
+        if (v) v.paused ? void v.play() : v.pause()
+      }}
+    >
+      <video ref={videoRef} src={src} style={{ width: '100%', height: '100%' }} playsInline />
     </ZoomableVideo>
   )
 }
@@ -66,7 +78,7 @@ export function Player({ src }: { src: string }) {
 | `className` / `style` | | いちばん外の枠に付く。大きさ（幅・高さ）はここで決める |
 | `resetKey` | `string` | 変わったら等倍に戻す（動画を切り替えたとき） |
 | `iframe` | `boolean` | 中身が iframe（YouTube）のとき |
-| `onTap` | `() => void` | 1 回タップしたとき（ダブルタップでないと分かってから呼ぶ） |
+| `onTap` | `() => void` | 1 回タップしたとき（ダブルタップでないと分かってから呼ぶ）。`<video>` でも YouTube（`iframe`）でも使える。ふつうは再生・一時停止 |
 | `expandable` | `boolean` | 枠を縦に広げられるようにする。標準は 16:9 の枠になる。枠の幅は親いっぱい（`className`・`style` で変えられる） |
 | `frame` | `'normal' \| 'medium' \| 'large'` | 枠の大きさ（`expandable` のとき）。使う側で覚えておく。中・大は、枠の下の端を画面の高さの 55%・3 分の 2 まで伸ばす（動画が画面の下のほうにあるときは、ほとんど伸びない） |
 | `onCycleFrame` | `() => void` | 「枠の大きさ」ボタンを押したとき。無ければボタンを出さない |
@@ -158,6 +170,7 @@ import '@shiodome47/video-zoom/style.css'
 ```
 
 - Pinch with two fingers, drag with one finger while zoomed, double-tap to zoom in / reset. Trackpad pinch and +/− buttons on desktop.
+- `onTap` fires on a single tap (after ruling out a double-tap) for both `<video>` and YouTube — typically used to toggle play/pause.
 - For YouTube, pass `iframe` and handle play/pause in `onTap`: a transparent layer receives touches so the browser doesn't zoom the page; after a tap, the bottom strip lets touches through to YouTube's own controls for 3 seconds.
 - Button labels default to Japanese; pass `labels={EN_LABELS}` or any partial override.
 - The stylesheet only affects elements inside `.video-zoom`. Customize with the `--vz-*` CSS variables.
