@@ -57,6 +57,25 @@ describe('iPhone の Safari', () => {
   })
 })
 
+describe('枠を縦に広げる（expandable）', () => {
+  it('枠に印（data-expandable）を付け、CSS で幅を親いっぱいに決める（縦に広げたとき、幅まで広がってはみ出さないように）', () => {
+    const { rerender } = render(
+      <ZoomableVideo expandable frame="large" onCycleFrame={() => {}}>
+        <div />
+      </ZoomableVideo>,
+    )
+    expect(screen.getByTestId('zoomable-video')).toHaveAttribute('data-expandable', 'true')
+    rerender(
+      <ZoomableVideo>
+        <div />
+      </ZoomableVideo>,
+    )
+    expect(screen.getByTestId('zoomable-video')).not.toHaveAttribute('data-expandable')
+    const css = readFileSync(resolve(SRC, 'style.css'), 'utf8')
+    expect(css).toMatch(/:where\(\.video-zoom\[data-expandable\]\)\s*\{\s*width:\s*100%;/)
+  })
+})
+
 describe('部品専用の CSS', () => {
   const css = readFileSync(resolve(SRC, 'style.css'), 'utf8')
 
@@ -69,7 +88,7 @@ describe('部品専用の CSS', () => {
       .flatMap((s) => s.split(',').map((x) => x.trim()))
     expect(selectors.length).toBeGreaterThan(5)
     for (const s of selectors) {
-      expect(s, s).toMatch(/^(:where\(\.video-zoom\)|\.video-zoom)(\s|$)/)
+      expect(s, s).toMatch(/^(:where\(\.video-zoom(\[[\w-]+\])?\)|\.video-zoom)(\s|$)/)
     }
   })
 

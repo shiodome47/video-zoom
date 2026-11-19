@@ -20,6 +20,7 @@ const TEXT = {
     ytInput: 'YouTube の URL を貼って試す',
     show: '表示',
     labels: 'ボタンの文言',
+    frameNote: '右上の枠のボタン（標準 → 中 → 大）は、枠の下の端を、画面の 55%・3 分の 2 の高さまで伸ばします。動画を画面の上のほうに出してから押してください。',
   },
   en: {
     lead: 'A React frame that lets you pinch-zoom and pan a video — YouTube embeds included.',
@@ -31,6 +32,7 @@ const TEXT = {
     ytInput: 'Paste a YouTube URL to try',
     show: 'Show',
     labels: 'Button labels',
+    frameNote: 'The frame button (normal → medium → large) stretches the frame down to 55% / two-thirds of the screen height. Scroll the video near the top of the screen before pressing it.',
   },
 } as const
 
@@ -45,6 +47,7 @@ export function App() {
         <h1>video-zoom</h1>
         <p>{t.lead}</p>
         <p className="demo__muted">{t.how}</p>
+        <p className="demo__muted">{t.frameNote}</p>
         <pre className="demo__code">
           <code>npm install @shiodome47/video-zoom</code>
         </pre>
