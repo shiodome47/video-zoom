@@ -67,8 +67,8 @@ export function Player({ src }: { src: string }) {
 | `resetKey` | `string` | 変わったら等倍に戻す（動画を切り替えたとき） |
 | `iframe` | `boolean` | 中身が iframe（YouTube）のとき |
 | `onTap` | `() => void` | 1 回タップしたとき（ダブルタップでないと分かってから呼ぶ） |
-| `expandable` | `boolean` | 枠を縦に広げられるようにする。標準は 16:9 の枠になる |
-| `frame` | `'normal' \| 'medium' \| 'large'` | 枠の大きさ（`expandable` のとき）。使う側で覚えておく |
+| `expandable` | `boolean` | 枠を縦に広げられるようにする。標準は 16:9 の枠になる。枠の幅は親いっぱい（`className`・`style` で変えられる） |
+| `frame` | `'normal' \| 'medium' \| 'large'` | 枠の大きさ（`expandable` のとき）。使う側で覚えておく。中・大は、枠の下の端を画面の高さの 55%・3 分の 2 まで伸ばす（動画が画面の下のほうにあるときは、ほとんど伸びない） |
 | `onCycleFrame` | `() => void` | 「枠の大きさ」ボタンを押したとき。無ければボタンを出さない |
 | `activityKey` | `number` | 変わるたびに右上のボタンを出す |
 | `labels` | `Partial<VideoZoomLabels>` | ボタンの文言。変えたいものだけ渡す |

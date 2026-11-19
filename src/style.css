@@ -25,6 +25,14 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* 枠を縦に広げられるとき（expandable）: 幅を親いっぱいに決めておく。
+   幅が決まっていないと、16:9 の形（aspect-ratio）と、縦に広げる高さ（min-height）から幅まで広がり、
+   枠が親からはみ出す（動画が切れて、右上のボタンが見えなくなる）。
+   :where() で「強さ」を 0 にしてあるので、使う側が className・style で幅を決めれば、そちらが勝つ */
+:where(.video-zoom[data-expandable]) {
+  width: 100%;
+}
+
 .video-zoom *,
 .video-zoom *::before,
 .video-zoom *::after {

@@ -308,6 +308,7 @@ export function ZoomableVideo({
       }}
       data-testid="zoomable-video"
       data-frame={frame}
+      data-expandable={expandable || undefined}
       data-zoomed={zoomed || undefined}
       tabIndex={iframe ? -1 : undefined}
       onPointerDownCapture={showControls}
