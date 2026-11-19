@@ -13,6 +13,10 @@
     "isolatedModules": true,
     "resolveJsonModule": true,
     "noEmit": true,
+    // 見本のページ（examples/web）の import を、ビルド前の src/ に向ける（vite.config.ts の alias と同じ）
+    "paths": {
+      "@shiodome47/video-zoom": ["./src/index.ts"]
+    },
     "types": ["node", "vitest/globals", "@testing-library/jest-dom", "vite/client"]
   },
   "include": ["src", "examples/web/src", "vitest.config.ts", "tsup.config.ts", "examples/web/vite.config.ts", "vitest.setup.ts"]
