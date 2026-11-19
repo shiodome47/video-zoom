@@ -1,0 +1,150 @@
+/*
+ * @shiodome47/video-zoom の見た目。
+ * すべて .video-zoom（部品のいちばん外の枠）の中だけに効く。使う側のページの見た目は変えない。
+ *
+ * 色や大きさは、下の変数（--vz-…）を上書きすれば変えられる。例:
+ *   .video-zoom { --vz-accent: rgba(37, 99, 235, 0.9); --vz-accent-hover: #3b82f6; }
+ */
+
+/* いちばん外の枠。:where() で「強さ」を 0 にしてあるので、
+   使う側が className で渡したクラス（absolute・h-full など）のほうが必ず勝つ */
+:where(.video-zoom) {
+  --vz-accent: rgba(13, 148, 136, 0.9); /* ボタンの色（teal-600 の 90%） */
+  --vz-accent-hover: #14b8a6; /* マウスを乗せたときの色（teal-500） */
+  --vz-text: #fff; /* ボタンの文字・アイコンの色 */
+  --vz-radius: 0.375rem; /* ボタンの角の丸み */
+  --vz-gap: 0.375rem; /* ボタンどうしの間 */
+  --vz-inset: 0.5rem; /* 枠の右上からボタンまでの間 */
+  --vz-icon-size: 1.25rem; /* アイコンの大きさ */
+  --vz-pass-band: 3.5rem; /* YouTube でタップしたあと、指を YouTube に通す下の帯の高さ */
+  --vz-fade: 300ms; /* ボタンが消える・出るまでの時間 */
+
+  position: relative;
+  overflow: hidden;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.video-zoom *,
+.video-zoom *::before,
+.video-zoom *::after {
+  box-sizing: border-box;
+}
+
+/* 動画を入れる箱（拡大・移動はここに transform をかける） */
+.video-zoom .video-zoom__content {
+  position: absolute;
+  inset: 0;
+}
+
+/* 枠を縦に広げられるとき（expandable）: 動画は 16:9 のまま、上の端から置く */
+.video-zoom .video-zoom__content--16x9 {
+  inset: 0 auto auto 0;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+/* YouTube（iframe）の上に置く透明な面。指の操作をこちらで受ける */
+.video-zoom .video-zoom__gesture-layer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+/* タップの直後は、YouTube のボタンがある下の帯だけ、面をどける */
+.video-zoom .video-zoom__gesture-layer--pass {
+  bottom: var(--vz-pass-band);
+}
+
+/* 右上のボタンの並び */
+.video-zoom .video-zoom__controls {
+  position: absolute;
+  z-index: 10;
+  top: var(--vz-inset);
+  right: var(--vz-inset);
+  display: flex;
+  align-items: center;
+  gap: var(--vz-gap);
+  transition: opacity var(--vz-fade) ease;
+}
+
+/* 触っていないとき: 見えなくして、押せなくする（誤って押さない） */
+.video-zoom .video-zoom__controls--hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.video-zoom .video-zoom__button {
+  /* ブラウザ既定のボタンの見た目を消す（使う側に Tailwind などのリセットが無くても同じ見た目に） */
+  -webkit-appearance: none;
+  appearance: none;
+  margin: 0;
+  border: 0;
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  letter-spacing: normal;
+  text-transform: none;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.125rem;
+  padding: 0.5rem;
+  border-radius: var(--vz-radius);
+  color: var(--vz-text);
+  background-color: var(--vz-accent);
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.1),
+    0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    opacity 150ms ease,
+    background-color 150ms ease;
+}
+
+.video-zoom .video-zoom__button:hover:not(:disabled) {
+  background-color: var(--vz-accent-hover);
+}
+
+.video-zoom .video-zoom__button:focus-visible {
+  outline: 2px solid var(--vz-text);
+  outline-offset: 2px;
+}
+
+.video-zoom .video-zoom__button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* 「2.5× 戻す」 */
+.video-zoom .video-zoom__button--reset {
+  padding: 0.5rem 0.625rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* 枠の大きさのボタンの「中」「大」 */
+.video-zoom .video-zoom__frame-name {
+  padding-right: 0.125rem;
+}
+
+.video-zoom .video-zoom__icon {
+  display: block;
+  flex-shrink: 0;
+  width: var(--vz-icon-size);
+  height: var(--vz-icon-size);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .video-zoom .video-zoom__controls,
+  .video-zoom .video-zoom__button {
+    transition: none;
+  }
+}
