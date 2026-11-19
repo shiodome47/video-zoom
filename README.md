@@ -3,7 +3,7 @@
 動画（**YouTube の埋め込みも**）を、2 本指で拡大・移動できる React の部品です。
 ページ全体や、まわりの文字は動かさず、**動画だけ**が大きくなります。
 
-- 見本: Vercel に置いた見本のページ（ふつうの動画と YouTube）
+- 見本: https://video-zoom-ruddy.vercel.app/ （ふつうの動画と YouTube。スマホで開いてピンチしてみてください）
 - English: [see below](#english)
 
 ## できること
@@ -139,6 +139,8 @@ MIT。ボタンのアイコンは [Lucide](https://lucide.dev)（ISC）と同じ
 ---
 
 ## English
+
+Demo: https://video-zoom-ruddy.vercel.app/
 
 A React frame that lets users pinch-zoom and pan a video — **including YouTube embeds** — without zooming the whole page (works on iPhone Safari).
 
