@@ -1,6 +1,6 @@
 {
   "name": "@shiodome47/video-zoom",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "動画（YouTube の埋め込みも）を 2 本指で拡大・移動できる React の枠。iPhone の Safari でもページ全体が拡大されない。",
   "keywords": [
     "react",
