@@ -83,7 +83,11 @@ export function ZoomableVideo({
   const passTimerActive = useRef(false)
   passTimerActive.current = passThrough
   const passTimer = useRef<ReturnType<typeof setTimeout>>()
+  /** 動画の下の端から、枠の下の端までの間（px）。枠を縦に広げているとき、等倍の動画は枠のまん中に出るので、下が空く */
+  const [passGap, setPassGap] = useState(0)
+  const measureGapRef = useRef<() => void>(() => {})
   const openPass = useCallback(() => {
+    measureGapRef.current()
     setPassThrough(true)
     clearTimeout(passTimer.current)
     passTimer.current = setTimeout(() => setPassThrough(false), YT_PASS_MS)
@@ -104,6 +108,12 @@ export function ZoomableVideo({
   const fit = (z: ZoomState) => {
     const { w, h, cw, ch } = size()
     return clampZoom(z, w, h, cw, ch)
+  }
+
+  // 面をどける帯は、枠の下の端ではなく、動画の下の端（YouTube のボタンがあるところ）に合わせる
+  measureGapRef.current = () => {
+    const { h, ch } = size()
+    setPassGap(Math.max(0, Math.round((h - ch) / 2)))
   }
 
   /**
@@ -188,7 +198,10 @@ export function ZoomableVideo({
   useEffect(() => {
     const el = frameRef.current
     if (!el || typeof ResizeObserver === 'undefined') return
-    const ro = new ResizeObserver(() => setZoom((z) => fit(z)))
+    const ro = new ResizeObserver(() => {
+      setZoom((z) => fit(z))
+      measureGapRef.current()
+    })
     ro.observe(el)
     return () => ro.disconnect()
   }, [])
@@ -286,6 +299,8 @@ export function ZoomableVideo({
   }
 
   const zoomed = zoom.scale > 1.001
+  /** YouTube のボタンがある帯だけ、面をどけている間 */
+  const passing = passThrough && !zoomed
   const handlers = {
     onPointerDown,
     onPointerMove,
@@ -330,12 +345,21 @@ export function ZoomableVideo({
 
       {/* YouTube: 動画全体を透明な面で覆って、ピンチ・ドラッグ・タップを受ける。
           タップの直後は、YouTube のボタンがある下の帯だけをどける（全体をどけると、そのあいだのピンチで
-          iPhone ではアプリ全体が拡大されてしまうため） */}
+          iPhone ではアプリ全体が拡大されてしまうため）。
+          枠を縦に広げているときは、動画の下が空くので、帯を動画の下の端に合わせ、その下はもう 1 枚の面で覆う */}
       {iframe && (
         <div
-          className={cn('video-zoom__gesture-layer', passThrough && !zoomed && 'video-zoom__gesture-layer--pass')}
+          className={cn('video-zoom__gesture-layer', passing && 'video-zoom__gesture-layer--pass')}
+          style={passing && passGap > 0 ? { bottom: `calc(${passGap}px + var(--vz-pass-band))` } : undefined}
           data-testid="gesture-layer"
-          data-pass={passThrough && !zoomed ? 'bottom' : undefined}
+          data-pass={passing ? 'bottom' : undefined}
+        />
+      )}
+      {iframe && passing && passGap > 0 && (
+        <div
+          className="video-zoom__gesture-layer"
+          style={{ top: 'auto', height: passGap }}
+          data-testid="gesture-layer-below"
         />
       )}
 

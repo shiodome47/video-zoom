@@ -87,4 +87,26 @@ describe('動画の右上のボタン', () => {
     act(() => vi.advanceTimersByTime(YT_PASS_MS + 10))
     expect(layer()).not.toHaveAttribute('data-pass')
   })
+
+  it('YouTube: 枠を縦に広げているときは、どける帯を動画の下の端に合わせる（枠の下の端ではなく）', () => {
+    render(
+      <ZoomableVideo iframe expandable frame="large" onTap={() => {}}>
+        <iframe title="yt" />
+      </ZoomableVideo>,
+    )
+    // 枠は 320×400、動画は 16:9 で 320×180。等倍ではまん中に出るので、動画の下は 110px 空く
+    const frame = screen.getByTestId('zoomable-video')
+    frame.getBoundingClientRect = () => ({ left: 0, top: 0, width: 320, height: 400, right: 320, bottom: 400, x: 0, y: 0, toJSON: () => ({}) })
+    const layer = screen.getByTestId('gesture-layer')
+    fireEvent.pointerDown(layer, { pointerId: 1, pointerType: 'touch', clientX: 50, clientY: 50 })
+    fireEvent.pointerUp(layer, { pointerId: 1, pointerType: 'touch', clientX: 50, clientY: 50 })
+    act(() => vi.advanceTimersByTime(350))
+    expect(layer).toHaveAttribute('data-pass', 'bottom')
+    expect(layer.style.bottom).toBe('calc(110px + var(--vz-pass-band))')
+    // 動画の下の空いているところは、もう 1 枚の面で覆ったまま（そこでのピンチでページが拡大されないように）
+    expect(screen.getByTestId('gesture-layer-below').style.height).toBe('110px')
+    act(() => vi.advanceTimersByTime(YT_PASS_MS + 10))
+    expect(screen.queryByTestId('gesture-layer-below')).not.toBeInTheDocument()
+    expect(layer.style.bottom).toBe('')
+  })
 })
